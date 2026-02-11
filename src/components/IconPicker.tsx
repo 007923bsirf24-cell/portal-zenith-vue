@@ -9,7 +9,7 @@ const ICON_LIST = [
   'Banknote', 'BarChart', 'BarChart2', 'BarChart3',
   'BookOpen', 'Briefcase', 'Building', 'Building2', 'Calculator',
   'Calendar', 'CheckCircle', 'CircleDollarSign', 'Clipboard', 'Clock',
-  'Coins', 'CreditCard', 'Crown', 'Database', 'DollarSign',
+  'Coins', 'CreditCard', 'Crown', 'Database', 'DollarSign', 'GraduationCap',
   'Download', 'Eye', 'FileBarChart', 'FileCheck', 'FileSpreadsheet',
   'FileText', 'Filter', 'Flag', 'FolderOpen', 'Globe',
   'HandCoins', 'Hash', 'Heart', 'Home', 'Inbox',
@@ -19,7 +19,7 @@ const ICON_LIST = [
   'Receipt', 'RefreshCw', 'Scale', 'Search', 'Settings',
   'Shield', 'ShieldCheck', 'ShoppingCart', 'Star', 'Table',
   'Tag', 'Target', 'TrendingDown', 'TrendingUp', 'Trophy',
-  'Upload', 'Users', 'Wallet', 'Zap',
+  'Upload', 'UserPlus', 'Users', 'Wallet', 'Zap',
 ];
 
 interface IconPickerProps {

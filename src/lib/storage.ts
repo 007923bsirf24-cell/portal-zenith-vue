@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
   RECENTLY_OPENED: 'frh-recent',
   CONFIG_SOURCE_URL: 'frh-config-url',
   DARK_MODE: 'frh-dark-mode',
+  COVER_CONFIG: 'frh-cover-config',
 } as const;
 
 export function loadFromStorage<T>(key: string, fallback: T): T {

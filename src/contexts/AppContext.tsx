@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { Dashboard, DEFAULT_DASHBOARDS } from '@/data/dashboards';
 import { ThemeConfig, DEFAULT_THEME, applyTheme } from '@/lib/theme';
+import { CoverConfig, DEFAULT_COVER_CONFIG } from '@/data/coverConfig';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '@/lib/storage';
 
 interface DashboardOverrides {
@@ -35,6 +36,9 @@ interface AppContextType {
   setConfigSourceUrl: (url: string) => void;
   baseDashboards: Dashboard[];
   setBaseDashboards: (d: Dashboard[]) => void;
+  coverConfig: CoverConfig;
+  setCoverConfig: (config: CoverConfig) => void;
+  resetCoverConfig: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -62,6 +66,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     loadFromStorage(STORAGE_KEYS.CONFIG_SOURCE_URL, '')
   );
   const [baseDashboards, setBaseDashboardsState] = useState<Dashboard[]>(DEFAULT_DASHBOARDS);
+  const [coverConfig, setCoverConfigState] = useState<CoverConfig>(() =>
+    loadFromStorage(STORAGE_KEYS.COVER_CONFIG, DEFAULT_COVER_CONFIG)
+  );
 
   useEffect(() => {
     applyTheme(theme);
@@ -191,6 +198,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setBaseDashboardsState(d);
   }, []);
 
+  const setCoverConfig = useCallback((config: CoverConfig) => {
+    setCoverConfigState(config);
+    saveToStorage(STORAGE_KEYS.COVER_CONFIG, config);
+  }, []);
+
+  const resetCoverConfig = useCallback(() => {
+    setCoverConfigState(DEFAULT_COVER_CONFIG);
+    saveToStorage(STORAGE_KEYS.COVER_CONFIG, DEFAULT_COVER_CONFIG);
+  }, []);
+
   const value: AppContextType = {
     orgName, setOrgName,
     logoUrl, setLogoUrl,
@@ -202,6 +219,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     recentlyOpened, addRecentlyOpened, clearRecentlyOpened,
     configSourceUrl, setConfigSourceUrl,
     baseDashboards, setBaseDashboards,
+    coverConfig, setCoverConfig, resetCoverConfig,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
