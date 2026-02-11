@@ -1,20 +1,25 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Palette, Image, LayoutDashboard, Download } from 'lucide-react';
+import { Palette, Image, LayoutDashboard, Download, Home } from 'lucide-react';
 import { BrandingSettings } from '@/components/settings/BrandingSettings';
 import { ThemeSettings } from '@/components/settings/ThemeSettings';
 import { DashboardManager } from '@/components/settings/DashboardManager';
 import { ImportExportSettings } from '@/components/settings/ImportExportSettings';
+import { CoverPageSettings } from '@/components/settings/CoverPageSettings';
 
 const Settings = () => {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground">Settings</h1>
-        <p className="text-muted-foreground mt-1">Customize branding, theme, and manage dashboards</p>
+        <p className="text-muted-foreground mt-1">Customize branding, theme, cover page, and manage dashboards</p>
       </div>
 
-      <Tabs defaultValue="branding" className="space-y-6">
+      <Tabs defaultValue="cover" className="space-y-6">
         <TabsList className="bg-muted rounded-xl p-1 h-auto flex-wrap">
+          <TabsTrigger value="cover" className="rounded-lg gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <Home size={15} />
+            Cover Page
+          </TabsTrigger>
           <TabsTrigger value="branding" className="rounded-lg gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
             <Image size={15} />
             Branding
@@ -33,6 +38,7 @@ const Settings = () => {
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="cover"><CoverPageSettings /></TabsContent>
         <TabsContent value="branding"><BrandingSettings /></TabsContent>
         <TabsContent value="theme"><ThemeSettings /></TabsContent>
         <TabsContent value="dashboards"><DashboardManager /></TabsContent>
