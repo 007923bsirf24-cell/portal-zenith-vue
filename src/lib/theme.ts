@@ -39,13 +39,70 @@ export const THEME_PRESETS: Record<string, ThemeConfig> = {
   },
 };
 
+function darkenHSL(hsl: string, amount: number): string {
+  const parts = hsl.match(/[\d.]+/g);
+  if (!parts || parts.length < 3) return hsl;
+  const h = parseFloat(parts[0]);
+  const s = parseFloat(parts[1]);
+  const l = Math.max(0, parseFloat(parts[2]) - amount);
+  return `${Math.round(h)} ${Math.round(s)}% ${Math.round(l)}%`;
+}
+
+function toDarkBg(hsl: string): string {
+  const parts = hsl.match(/[\d.]+/g);
+  if (!parts || parts.length < 3) return '222 47% 6%';
+  const h = parseFloat(parts[0]);
+  return `${Math.round(h)} 47% 6%`;
+}
+
+function toDarkSurface(hsl: string): string {
+  const parts = hsl.match(/[\d.]+/g);
+  if (!parts || parts.length < 3) return '222 47% 8%';
+  const h = parseFloat(parts[0]);
+  return `${Math.round(h)} 47% 8%`;
+}
+
+function toDarkMuted(hsl: string): string {
+  const parts = hsl.match(/[\d.]+/g);
+  if (!parts || parts.length < 3) return '217 33% 17%';
+  const h = parseFloat(parts[0]);
+  return `${Math.round(h)} 33% 17%`;
+}
+
 export function applyTheme(theme: ThemeConfig): void {
   const root = document.documentElement;
+  const isDark = root.classList.contains('dark');
+
+  if (isDark) {
+    root.style.setProperty('--background', toDarkBg(theme.background));
+    root.style.setProperty('--card', toDarkSurface(theme.surface));
+    root.style.setProperty('--popover', toDarkSurface(theme.surface));
+    root.style.setProperty('--foreground', '210 40% 98%');
+    root.style.setProperty('--card-foreground', '210 40% 98%');
+    root.style.setProperty('--popover-foreground', '210 40% 98%');
+    root.style.setProperty('--secondary', toDarkMuted(theme.primary));
+    root.style.setProperty('--secondary-foreground', '210 40% 98%');
+    root.style.setProperty('--muted', toDarkMuted(theme.primary));
+    root.style.setProperty('--muted-foreground', '215 20% 65%');
+    root.style.setProperty('--border', toDarkMuted(theme.primary));
+    root.style.setProperty('--input', toDarkMuted(theme.primary));
+  } else {
+    root.style.setProperty('--background', theme.background);
+    root.style.setProperty('--card', theme.surface);
+    root.style.setProperty('--popover', theme.surface);
+    root.style.setProperty('--foreground', '222 47% 11%');
+    root.style.setProperty('--card-foreground', '222 47% 11%');
+    root.style.setProperty('--popover-foreground', '222 47% 11%');
+    root.style.setProperty('--secondary', '210 40% 96%');
+    root.style.setProperty('--secondary-foreground', '222 47% 11%');
+    root.style.setProperty('--muted', '210 40% 96%');
+    root.style.setProperty('--muted-foreground', '215 16% 47%');
+    root.style.setProperty('--border', '214 32% 91%');
+    root.style.setProperty('--input', '214 32% 91%');
+  }
+
   root.style.setProperty('--primary', theme.primary);
   root.style.setProperty('--accent', theme.accent);
-  root.style.setProperty('--background', theme.background);
-  root.style.setProperty('--card', theme.surface);
-  root.style.setProperty('--popover', theme.surface);
   root.style.setProperty('--ring', theme.primary);
   root.style.setProperty('--primary-foreground', '0 0% 100%');
   root.style.setProperty('--accent-foreground', '0 0% 100%');

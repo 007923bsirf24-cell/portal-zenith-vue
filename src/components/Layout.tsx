@@ -1,20 +1,32 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { NavLink } from '@/components/NavLink';
 import { useApp } from '@/contexts/AppContext';
 import { Moon, Sun, Menu, LayoutDashboard, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const NAV_ITEMS = [
   { label: 'Home', to: '/' },
   { label: 'Dashboards', to: '/dashboards' },
-  { label: 'Settings', to: '/settings' },
 ];
 
 export function Layout() {
   const { orgName, logoUrl, darkMode, toggleDarkMode } = useApp();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
+
+  // Hidden shortcut: Ctrl+Shift+S (or Cmd+Shift+S on Mac) to access Settings
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        navigate('/settings');
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background">
