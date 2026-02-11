@@ -77,7 +77,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
     saveToStorage(STORAGE_KEYS.DARK_MODE, darkMode);
-  }, [darkMode]);
+    // Re-apply theme when dark mode toggles so colors adapt
+    applyTheme(theme);
+  }, [darkMode, theme]);
 
   const dashboards = useMemo(() => {
     const base = baseDashboards
