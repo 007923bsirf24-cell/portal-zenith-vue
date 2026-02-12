@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { DynamicIcon } from '@/components/DynamicIcon';
+import { StaticDashboard } from '@/components/dashboards/StaticDashboard';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Copy, ExternalLink, AlertCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -103,13 +104,7 @@ const DashboardViewer = () => {
 
         <div className="p-4 sm:p-6">
           {!dashboard.embedUrl ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <AlertCircle className="h-10 w-10 text-muted-foreground mb-3" />
-              <p className="font-medium text-foreground mb-1">No embed URL configured</p>
-              <p className="text-sm text-muted-foreground">
-                Add an embed URL in Settings → Manage Dashboards to display this report.
-              </p>
-            </div>
+            <StaticDashboard dashboard={dashboard} />
           ) : (
             <div className="relative rounded-xl overflow-hidden bg-muted" style={{ minHeight: '600px' }}>
               {!iframeLoaded && (
