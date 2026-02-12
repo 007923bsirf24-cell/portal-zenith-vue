@@ -1,55 +1,61 @@
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { COMPLIANCE_DATA } from '@/data/dummyDashboardData';
-import { cn } from '@/lib/utils';
-import { ShieldCheck, ShieldAlert, Clock } from 'lucide-react';
+import { KpiCard, ChartCard, TableCard, StatusBadge } from './KpiCard';
+import { DashboardFilters, useDashboardFilters } from './DashboardFilters';
 
 const RISK_COLORS = ['hsl(var(--primary))', 'hsl(var(--muted-foreground))', 'hsl(var(--destructive))'];
-
-const STATUS_ICON = {
-  Compliant: <ShieldCheck size={14} className="text-emerald-600 dark:text-emerald-400" />,
-  'In Progress': <Clock size={14} className="text-primary" />,
-  'Action Needed': <ShieldAlert size={14} className="text-destructive" />,
-};
+const TOOLTIP_STYLE = { background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 };
 
 export function ComplianceDashboard() {
+  const { campus, setCampus, year, setYear } = useDashboardFilters();
+
   return (
-    <div className="space-y-6">
-      <div className="grid lg:grid-cols-2 gap-6">
-        <div className="rounded-xl border bg-card p-6">
-          <h3 className="text-sm font-semibold text-card-foreground mb-4">Compliance Status</h3>
-          <div className="space-y-2">
-            {COMPLIANCE_DATA.status.map(s => (
-              <div key={s.area} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                <div className="flex items-center gap-2">
-                  {STATUS_ICON[s.status as keyof typeof STATUS_ICON]}
-                  <div>
-                    <p className="font-medium text-sm text-card-foreground">{s.area}</p>
-                    <p className="text-xs text-muted-foreground">Due: {s.dueDate}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className={cn('text-xs font-medium px-2 py-0.5 rounded-full',
-                    s.risk === 'Low' && 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-                    s.risk === 'Medium' && 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-                    s.risk === 'High' && 'bg-red-100 text-destructive dark:bg-red-900/30',
-                  )}>{s.risk} Risk</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="rounded-xl border bg-card p-6">
-          <h3 className="text-sm font-semibold text-card-foreground mb-4">Risk Distribution</h3>
+    <div className="space-y-5">
+      <DashboardFilters campus={campus} setCampus={setCampus} year={year} setYear={setYear} />
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {COMPLIANCE_DATA.kpis.map(k => <KpiCard key={k.label} {...k} />)}
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-5">
+        <ChartCard title="Compliance Score Trend" className="lg:col-span-2">
+          <ResponsiveContainer width="100%" height={280}>
+            <ComposedChart data={COMPLIANCE_DATA.trend}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+              <XAxis dataKey="month" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
+              <YAxis yAxisId="left" domain={[60, 100]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
+              <YAxis yAxisId="right" orientation="right" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <Line yAxisId="left" type="monotone" dataKey="score" name="Score %" stroke="hsl(var(--primary))" strokeWidth={2} />
+              <Bar yAxisId="right" dataKey="items" name="Open Items" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} fillOpacity={0.6} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Risk Distribution">
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
-              <Pie data={COMPLIANCE_DATA.riskDistribution} cx="50%" cy="50%" outerRadius={100} dataKey="value" label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}>
+              <Pie data={COMPLIANCE_DATA.riskDistribution} cx="50%" cy="50%" innerRadius={50} outerRadius={85} dataKey="value" paddingAngle={3} label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} style={{ fontSize: 10 }}>
                 {COMPLIANCE_DATA.riskDistribution.map((_, i) => <Cell key={i} fill={RISK_COLORS[i]} />)}
               </Pie>
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
       </div>
+
+      <TableCard
+        title="Compliance Items Detail"
+        headers={['Area', 'Status', 'Due Date', 'Risk', 'Owner']}
+        rows={COMPLIANCE_DATA.items.map(s => [
+          s.area,
+          <StatusBadge status={s.status} />,
+          s.dueDate,
+          <StatusBadge status={s.risk} />,
+          s.owner,
+        ])}
+      />
     </div>
   );
 }
