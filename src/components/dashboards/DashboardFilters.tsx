@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { CAMPUSES, ACADEMIC_YEARS, QUARTERS } from '@/data/dummyDashboardData';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building2, CalendarDays, Filter } from 'lucide-react';
+import { Building2, CalendarDays, SlidersHorizontal } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface DashboardFiltersProps {
   campus: string;
@@ -22,16 +23,23 @@ export function DashboardFilters({
   extra,
 }: DashboardFiltersProps) {
   return (
-    <div className="flex flex-wrap items-center gap-3 p-4 rounded-xl border bg-card">
-      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-        <Filter size={14} />
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-wrap items-center gap-3 p-3 px-4 rounded-2xl border bg-card/80 backdrop-blur-sm"
+    >
+      <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">
+        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+          <SlidersHorizontal size={13} className="text-primary" />
+        </div>
         Filters
       </div>
-      <div className="h-5 w-px bg-border" />
+      <div className="h-6 w-px bg-border/60" />
       <div className="flex items-center gap-2">
         <Building2 size={14} className="text-muted-foreground" />
         <Select value={campus} onValueChange={setCampus}>
-          <SelectTrigger className="h-8 w-[160px] text-xs">
+          <SelectTrigger className="h-8 w-[160px] text-xs rounded-lg border-border/60 bg-background/50">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -45,7 +53,7 @@ export function DashboardFilters({
         <div className="flex items-center gap-2">
           <CalendarDays size={14} className="text-muted-foreground" />
           <Select value={year} onValueChange={setYear}>
-            <SelectTrigger className="h-8 w-[120px] text-xs">
+            <SelectTrigger className="h-8 w-[120px] text-xs rounded-lg border-border/60 bg-background/50">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -58,7 +66,7 @@ export function DashboardFilters({
       )}
       {showQuarter && setQuarter && quarter && (
         <Select value={quarter} onValueChange={setQuarter}>
-          <SelectTrigger className="h-8 w-[140px] text-xs">
+          <SelectTrigger className="h-8 w-[140px] text-xs rounded-lg border-border/60 bg-background/50">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -70,11 +78,10 @@ export function DashboardFilters({
         </Select>
       )}
       {extra}
-    </div>
+    </motion.div>
   );
 }
 
-// Hook for common filter state
 export function useDashboardFilters() {
   const [campus, setCampus] = useState<string>('All Campuses');
   const [year, setYear] = useState<string>('2025-26');
