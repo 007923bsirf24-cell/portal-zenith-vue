@@ -1,3 +1,8 @@
+/**
+ * DASHBOARD DEFAULTS — Edit DEFAULT_DASHBOARDS below to permanently set
+ * your dashboard list. Add embedUrl values to show real Power BI / Looker embeds.
+ */
+
 export interface Dashboard {
   id: string;
   title: string;

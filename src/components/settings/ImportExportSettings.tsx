@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Download, Upload, Link2, RotateCcw, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Download, Upload, Link2, RotateCcw, CheckCircle, AlertCircle, Loader2, Info, Code2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export function ImportExportSettings() {
@@ -84,6 +84,23 @@ export function ImportExportSettings() {
 
   return (
     <div className="space-y-6">
+      {/* Permanent settings tip */}
+      <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5 flex gap-3">
+        <Info size={18} className="text-primary mt-0.5 shrink-0" />
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-foreground">Make settings permanent (no database needed)</p>
+          <p className="text-sm text-muted-foreground">
+            Settings are saved in your browser. If they ever reset, you can permanently bake your defaults
+            into the source code by editing these files:
+          </p>
+          <ul className="text-xs text-muted-foreground mt-2 space-y-1 font-mono">
+            <li className="flex items-center gap-2"><Code2 size={11} /> <span className="text-primary">src/config/appDefaults.ts</span> — org name, logo, dark mode</li>
+            <li className="flex items-center gap-2"><Code2 size={11} /> <span className="text-primary">src/data/coverConfig.ts</span> — cover page content & KPIs</li>
+            <li className="flex items-center gap-2"><Code2 size={11} /> <span className="text-primary">src/data/dashboards.ts</span> — dashboard list & embed URLs</li>
+          </ul>
+        </div>
+      </div>
+
       <div className="rounded-2xl border bg-card p-6 sm:p-8 space-y-4">
         <div>
           <h2 className="text-lg font-semibold text-card-foreground">Config Source</h2>
