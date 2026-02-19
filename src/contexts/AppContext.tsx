@@ -3,6 +3,7 @@ import { Dashboard, DEFAULT_DASHBOARDS } from '@/data/dashboards';
 import { ThemeConfig, DEFAULT_THEME, applyTheme } from '@/lib/theme';
 import { CoverConfig, DEFAULT_COVER_CONFIG } from '@/data/coverConfig';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '@/lib/storage';
+import { APP_DEFAULTS } from '@/config/appDefaults';
 
 interface DashboardOverrides {
   added: Dashboard[];
@@ -45,16 +46,16 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [orgName, setOrgNameState] = useState(() =>
-    loadFromStorage(STORAGE_KEYS.ORG_NAME, 'Finance Hub')
+    loadFromStorage(STORAGE_KEYS.ORG_NAME, APP_DEFAULTS.orgName)
   );
   const [logoUrl, setLogoUrlState] = useState(() =>
-    loadFromStorage(STORAGE_KEYS.LOGO, '')
+    loadFromStorage(STORAGE_KEYS.LOGO, APP_DEFAULTS.logoUrl)
   );
   const [theme, setThemeState] = useState<ThemeConfig>(() =>
     loadFromStorage(STORAGE_KEYS.THEME, DEFAULT_THEME)
   );
   const [darkMode, setDarkMode] = useState(() =>
-    loadFromStorage(STORAGE_KEYS.DARK_MODE, false)
+    loadFromStorage(STORAGE_KEYS.DARK_MODE, APP_DEFAULTS.darkMode)
   );
   const [overrides, setOverrides] = useState<DashboardOverrides>(() =>
     loadFromStorage(STORAGE_KEYS.OVERRIDES, DEFAULT_OVERRIDES)
@@ -111,10 +112,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const resetBranding = useCallback(() => {
-    setOrgNameState('Finance Hub');
-    setLogoUrlState('');
-    saveToStorage(STORAGE_KEYS.ORG_NAME, 'Finance Hub');
-    saveToStorage(STORAGE_KEYS.LOGO, '');
+    setOrgNameState(APP_DEFAULTS.orgName);
+    setLogoUrlState(APP_DEFAULTS.logoUrl);
+    saveToStorage(STORAGE_KEYS.ORG_NAME, APP_DEFAULTS.orgName);
+    saveToStorage(STORAGE_KEYS.LOGO, APP_DEFAULTS.logoUrl);
   }, []);
 
   const toggleDarkMode = useCallback(() => {

@@ -1,3 +1,8 @@
+/**
+ * COVER PAGE DEFAULTS — Edit the DEFAULT_COVER_CONFIG below to permanently
+ * set your cover page content. These values are used when localStorage is cleared.
+ */
+
 export interface CoverKPI {
   id: string;
   label: string;
