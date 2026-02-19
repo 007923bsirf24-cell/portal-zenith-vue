@@ -1,3 +1,5 @@
+import { COLORS } from '@/config/site.config';
+
 export interface ThemeConfig {
   primary: string;
   accent: string;
@@ -5,14 +7,38 @@ export interface ThemeConfig {
   surface: string;
 }
 
+// Convert hex → HSL string for CSS variables
+function hexToHSLStr(hex: string): string {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const r = parseInt(hex.substring(0, 2), 16) / 255;
+  const g = parseInt(hex.substring(2, 4), 16) / 255;
+  const b = parseInt(hex.substring(4, 6), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+      case g: h = ((b - r) / d + 2) / 6; break;
+      case b: h = ((r - g) / d + 4) / 6; break;
+    }
+  }
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+}
+
+// Build the default theme from site.config.ts COLORS
 export const DEFAULT_THEME: ThemeConfig = {
-  primary: '217 91% 60%',
-  accent: '199 89% 48%',
-  background: '210 20% 98%',
-  surface: '0 0% 100%',
+  primary:    hexToHSLStr(COLORS.primary),
+  accent:     hexToHSLStr(COLORS.accent),
+  background: hexToHSLStr(COLORS.background),
+  surface:    hexToHSLStr(COLORS.surface),
 };
 
 export const THEME_PRESETS: Record<string, ThemeConfig> = {
+  'Brand (Pak Turk)': DEFAULT_THEME,
   'Default Blue': {
     primary: '217 91% 60%',
     accent: '199 89% 48%',
@@ -39,34 +65,22 @@ export const THEME_PRESETS: Record<string, ThemeConfig> = {
   },
 };
 
-function darkenHSL(hsl: string, amount: number): string {
-  const parts = hsl.match(/[\d.]+/g);
-  if (!parts || parts.length < 3) return hsl;
-  const h = parseFloat(parts[0]);
-  const s = parseFloat(parts[1]);
-  const l = Math.max(0, parseFloat(parts[2]) - amount);
-  return `${Math.round(h)} ${Math.round(s)}% ${Math.round(l)}%`;
-}
-
 function toDarkBg(hsl: string): string {
   const parts = hsl.match(/[\d.]+/g);
   if (!parts || parts.length < 3) return '222 47% 6%';
-  const h = parseFloat(parts[0]);
-  return `${Math.round(h)} 47% 6%`;
+  return `${Math.round(parseFloat(parts[0]))} 47% 6%`;
 }
 
 function toDarkSurface(hsl: string): string {
   const parts = hsl.match(/[\d.]+/g);
   if (!parts || parts.length < 3) return '222 47% 8%';
-  const h = parseFloat(parts[0]);
-  return `${Math.round(h)} 47% 8%`;
+  return `${Math.round(parseFloat(parts[0]))} 47% 8%`;
 }
 
 function toDarkMuted(hsl: string): string {
   const parts = hsl.match(/[\d.]+/g);
   if (!parts || parts.length < 3) return '217 33% 17%';
-  const h = parseFloat(parts[0]);
-  return `${Math.round(h)} 33% 17%`;
+  return `${Math.round(parseFloat(parts[0]))} 33% 17%`;
 }
 
 export function applyTheme(theme: ThemeConfig): void {
@@ -109,28 +123,7 @@ export function applyTheme(theme: ThemeConfig): void {
 }
 
 export function hexToHSL(hex: string): string {
-  hex = hex.replace('#', '');
-  if (hex.length === 3) {
-    hex = hex.split('').map(c => c + c).join('');
-  }
-  const r = parseInt(hex.substring(0, 2), 16) / 255;
-  const g = parseInt(hex.substring(2, 4), 16) / 255;
-  const b = parseInt(hex.substring(4, 6), 16) / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h = 0;
-  let s = 0;
-  const l = (max + min) / 2;
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-      case g: h = ((b - r) / d + 2) / 6; break;
-      case b: h = ((r - g) / d + 4) / 6; break;
-    }
-  }
-  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+  return hexToHSLStr(hex);
 }
 
 export function hslToHex(hsl: string): string {
