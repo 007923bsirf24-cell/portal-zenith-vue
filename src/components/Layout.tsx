@@ -1,10 +1,12 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import { NavLink } from '@/components/NavLink';
 import { useApp } from '@/contexts/AppContext';
-import { Moon, Sun, Menu, LayoutDashboard, User } from 'lucide-react';
+import { Moon, Sun, Menu, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState, useEffect } from 'react';
+import { NAVBAR } from '@/config/site.config';
+import logoImg from '@/assets/logo.png';
 
 const NAV_ITEMS = [
   { label: 'Home', to: '/' },
@@ -33,14 +35,10 @@ export function Layout() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg">
         <div className="mx-auto max-w-7xl flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
           <NavLink to="/" className="flex items-center gap-2.5 shrink-0">
-            {logoUrl ? (
-              <img src={logoUrl} alt={orgName} className="h-8 w-8 rounded-lg object-cover" />
-            ) : (
-              <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary text-primary-foreground">
-                <LayoutDashboard size={18} />
-              </div>
-            )}
-            <span className="font-semibold text-foreground hidden sm:block">{orgName}</span>
+            {NAVBAR.showLogo ? (
+              <img src={logoImg} alt={orgName} className="h-8 w-8 object-contain" />
+            ) : null}
+            <span className="font-semibold text-foreground hidden sm:block">{NAVBAR.appName}</span>
           </NavLink>
 
           <nav className="hidden md:flex items-center gap-1 bg-muted rounded-full p-1">
