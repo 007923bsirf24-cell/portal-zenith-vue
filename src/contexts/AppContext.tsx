@@ -80,13 +80,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
   const [cloudSynced, setCloudSynced] = useState(false);
 
-  // On mount, load from cloud and override localStorage values
+  // On mount, load from cloud and override localStorage values.
+  // If cloud is empty, seed it with current defaults so data persists across devices.
   useEffect(() => {
     loadAllFromCloud().then((cloud) => {
-      if (Object.keys(cloud).length === 0) {
-        setCloudSynced(true);
+      const hasCloudData = Object.keys(cloud).length > 0;
+
+      if (!hasCloudData) {
+        // First time — seed cloud with all current defaults
+        const seedData: Record<string, unknown> = {
+          [STORAGE_KEYS.ORG_NAME]: orgName,
+          [STORAGE_KEYS.LOGO]: logoUrl,
+          [STORAGE_KEYS.THEME]: theme,
+          [STORAGE_KEYS.DARK_MODE]: darkMode,
+          [STORAGE_KEYS.OVERRIDES]: overrides,
+          [STORAGE_KEYS.COVER_CONFIG]: coverConfig,
+          [STORAGE_KEYS.CONFIG_SOURCE_URL]: configSourceUrl,
+          [STORAGE_KEYS.RECENTLY_OPENED]: recentlyOpened,
+        };
+        // Save all defaults to cloud in parallel
+        Promise.all(
+          Object.entries(seedData).map(([key, value]) => saveToCloud(key, value))
+        ).then(() => setCloudSynced(true));
         return;
       }
+
+      // Cloud has data — apply it
       if (cloud[STORAGE_KEYS.ORG_NAME] != null) {
         const v = cloud[STORAGE_KEYS.ORG_NAME] as string;
         setOrgNameState(v);
@@ -121,6 +140,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const v = cloud[STORAGE_KEYS.CONFIG_SOURCE_URL] as string;
         setConfigSourceUrlState(v);
         saveToStorage(STORAGE_KEYS.CONFIG_SOURCE_URL, v);
+      }
+      if (cloud[STORAGE_KEYS.RECENTLY_OPENED] != null) {
+        const v = cloud[STORAGE_KEYS.RECENTLY_OPENED] as string[];
+        setRecentlyOpened(v);
+        saveToStorage(STORAGE_KEYS.RECENTLY_OPENED, v);
       }
       setCloudSynced(true);
     });
