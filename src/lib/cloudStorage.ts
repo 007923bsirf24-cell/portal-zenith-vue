@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
  */
 export async function loadFromCloud<T>(key: string, fallback: T): Promise<T> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('app_settings')
       .select('setting_value')
       .eq('setting_key', key)
@@ -24,10 +24,10 @@ export async function loadFromCloud<T>(key: string, fallback: T): Promise<T> {
  */
 export async function saveToCloud(key: string, value: unknown): Promise<void> {
   try {
-    await supabase
+    await (supabase as any)
       .from('app_settings')
       .upsert(
-        { setting_key: key, setting_value: value as any, updated_at: new Date().toISOString() },
+        { setting_key: key, setting_value: value, updated_at: new Date().toISOString() },
         { onConflict: 'setting_key' }
       );
   } catch (e) {
@@ -40,7 +40,7 @@ export async function saveToCloud(key: string, value: unknown): Promise<void> {
  */
 export async function loadAllFromCloud(): Promise<Record<string, unknown>> {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('app_settings')
       .select('setting_key, setting_value');
 
