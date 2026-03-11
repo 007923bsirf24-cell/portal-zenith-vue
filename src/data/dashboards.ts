@@ -25,6 +25,9 @@ export const CATEGORIES = [
   'Capex',
   'Compliance',
   'Close Pack',
+  'Reconciliation',
+  'P&L',
+  'Students',
 ] as const;
 
 export const CATEGORY_ICON_FALLBACKS: Record<string, string> = {
