@@ -41,6 +41,9 @@ export const CATEGORY_ICON_FALLBACKS: Record<string, string> = {
   Capex: 'Building',
   Compliance: 'ShieldCheck',
   'Close Pack': 'PackageCheck',
+  Reconciliation: 'ArrowLeftRight',
+  'P&L': 'TrendingUp',
+  Students: 'GraduationCap',
 };
 
 export const DEFAULT_DASHBOARDS: Dashboard[] = DASHBOARDS;
