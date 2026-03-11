@@ -3,6 +3,7 @@ import { Dashboard, DEFAULT_DASHBOARDS } from '@/data/dashboards';
 import { ThemeConfig, DEFAULT_THEME, applyTheme } from '@/lib/theme';
 import { CoverConfig, DEFAULT_COVER_CONFIG } from '@/data/coverConfig';
 import { STORAGE_KEYS, loadFromStorage, saveToStorage } from '@/lib/storage';
+import { loadAllFromCloud, saveToCloud } from '@/lib/cloudStorage';
 import { APP_DEFAULTS } from '@/config/appDefaults';
 
 interface DashboardOverrides {
@@ -40,9 +41,16 @@ interface AppContextType {
   coverConfig: CoverConfig;
   setCoverConfig: (config: CoverConfig) => void;
   resetCoverConfig: () => void;
+  cloudSynced: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
+
+/** Save to both localStorage and cloud */
+function persist(key: string, value: unknown) {
+  saveToStorage(key, value);
+  saveToCloud(key, value);
+}
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [orgName, setOrgNameState] = useState(() =>
@@ -70,6 +78,53 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [coverConfig, setCoverConfigState] = useState<CoverConfig>(() =>
     loadFromStorage(STORAGE_KEYS.COVER_CONFIG, DEFAULT_COVER_CONFIG)
   );
+  const [cloudSynced, setCloudSynced] = useState(false);
+
+  // On mount, load from cloud and override localStorage values
+  useEffect(() => {
+    loadAllFromCloud().then((cloud) => {
+      if (Object.keys(cloud).length === 0) {
+        setCloudSynced(true);
+        return;
+      }
+      if (cloud[STORAGE_KEYS.ORG_NAME] != null) {
+        const v = cloud[STORAGE_KEYS.ORG_NAME] as string;
+        setOrgNameState(v);
+        saveToStorage(STORAGE_KEYS.ORG_NAME, v);
+      }
+      if (cloud[STORAGE_KEYS.LOGO] != null) {
+        const v = cloud[STORAGE_KEYS.LOGO] as string;
+        setLogoUrlState(v);
+        saveToStorage(STORAGE_KEYS.LOGO, v);
+      }
+      if (cloud[STORAGE_KEYS.THEME] != null) {
+        const v = cloud[STORAGE_KEYS.THEME] as ThemeConfig;
+        setThemeState(v);
+        saveToStorage(STORAGE_KEYS.THEME, v);
+      }
+      if (cloud[STORAGE_KEYS.DARK_MODE] != null) {
+        const v = cloud[STORAGE_KEYS.DARK_MODE] as boolean;
+        setDarkMode(v);
+        saveToStorage(STORAGE_KEYS.DARK_MODE, v);
+      }
+      if (cloud[STORAGE_KEYS.OVERRIDES] != null) {
+        const v = cloud[STORAGE_KEYS.OVERRIDES] as DashboardOverrides;
+        setOverrides(v);
+        saveToStorage(STORAGE_KEYS.OVERRIDES, v);
+      }
+      if (cloud[STORAGE_KEYS.COVER_CONFIG] != null) {
+        const v = cloud[STORAGE_KEYS.COVER_CONFIG] as CoverConfig;
+        setCoverConfigState(v);
+        saveToStorage(STORAGE_KEYS.COVER_CONFIG, v);
+      }
+      if (cloud[STORAGE_KEYS.CONFIG_SOURCE_URL] != null) {
+        const v = cloud[STORAGE_KEYS.CONFIG_SOURCE_URL] as string;
+        setConfigSourceUrlState(v);
+        saveToStorage(STORAGE_KEYS.CONFIG_SOURCE_URL, v);
+      }
+      setCloudSynced(true);
+    });
+  }, []);
 
   useEffect(() => {
     applyTheme(theme);
@@ -78,7 +133,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
     saveToStorage(STORAGE_KEYS.DARK_MODE, darkMode);
-    // Re-apply theme when dark mode toggles so colors adapt
     applyTheme(theme);
   }, [darkMode, theme]);
 
@@ -92,40 +146,44 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const setOrgName = useCallback((name: string) => {
     setOrgNameState(name);
-    saveToStorage(STORAGE_KEYS.ORG_NAME, name);
+    persist(STORAGE_KEYS.ORG_NAME, name);
   }, []);
 
   const setLogoUrl = useCallback((url: string) => {
     setLogoUrlState(url);
-    saveToStorage(STORAGE_KEYS.LOGO, url);
+    persist(STORAGE_KEYS.LOGO, url);
   }, []);
 
   const setTheme = useCallback((t: ThemeConfig) => {
     setThemeState(t);
-    saveToStorage(STORAGE_KEYS.THEME, t);
+    persist(STORAGE_KEYS.THEME, t);
   }, []);
 
   const resetTheme = useCallback(() => {
     setThemeState(DEFAULT_THEME);
-    saveToStorage(STORAGE_KEYS.THEME, DEFAULT_THEME);
+    persist(STORAGE_KEYS.THEME, DEFAULT_THEME);
     applyTheme(DEFAULT_THEME);
   }, []);
 
   const resetBranding = useCallback(() => {
     setOrgNameState(APP_DEFAULTS.orgName);
     setLogoUrlState(APP_DEFAULTS.logoUrl);
-    saveToStorage(STORAGE_KEYS.ORG_NAME, APP_DEFAULTS.orgName);
-    saveToStorage(STORAGE_KEYS.LOGO, APP_DEFAULTS.logoUrl);
+    persist(STORAGE_KEYS.ORG_NAME, APP_DEFAULTS.orgName);
+    persist(STORAGE_KEYS.LOGO, APP_DEFAULTS.logoUrl);
   }, []);
 
   const toggleDarkMode = useCallback(() => {
-    setDarkMode(prev => !prev);
+    setDarkMode(prev => {
+      const next = !prev;
+      persist(STORAGE_KEYS.DARK_MODE, next);
+      return next;
+    });
   }, []);
 
   const addDashboard = useCallback((d: Dashboard) => {
     setOverrides(prev => {
       const next = { ...prev, added: [...prev.added, d] };
-      saveToStorage(STORAGE_KEYS.OVERRIDES, next);
+      persist(STORAGE_KEYS.OVERRIDES, next);
       return next;
     });
   }, []);
@@ -137,14 +195,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const newAdded = [...prev.added];
         newAdded[addedIndex] = { ...newAdded[addedIndex], ...updates };
         const next = { ...prev, added: newAdded };
-        saveToStorage(STORAGE_KEYS.OVERRIDES, next);
+        persist(STORAGE_KEYS.OVERRIDES, next);
         return next;
       }
       const next = {
         ...prev,
         edited: { ...prev.edited, [id]: { ...prev.edited[id], ...updates } },
       };
-      saveToStorage(STORAGE_KEYS.OVERRIDES, next);
+      persist(STORAGE_KEYS.OVERRIDES, next);
       return next;
     });
   }, []);
@@ -154,18 +212,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const addedIndex = prev.added.findIndex(d => d.id === id);
       if (addedIndex >= 0) {
         const next = { ...prev, added: prev.added.filter(d => d.id !== id) };
-        saveToStorage(STORAGE_KEYS.OVERRIDES, next);
+        persist(STORAGE_KEYS.OVERRIDES, next);
         return next;
       }
       const next = { ...prev, deleted: [...prev.deleted, id] };
-      saveToStorage(STORAGE_KEYS.OVERRIDES, next);
+      persist(STORAGE_KEYS.OVERRIDES, next);
       return next;
     });
   }, []);
 
   const resetDashboards = useCallback(() => {
     setOverrides(DEFAULT_OVERRIDES);
-    saveToStorage(STORAGE_KEYS.OVERRIDES, DEFAULT_OVERRIDES);
+    persist(STORAGE_KEYS.OVERRIDES, DEFAULT_OVERRIDES);
     setBaseDashboardsState(DEFAULT_DASHBOARDS);
   }, []);
 
@@ -176,25 +234,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       deleted: baseDashboards.map(d => d.id),
     };
     setOverrides(next);
-    saveToStorage(STORAGE_KEYS.OVERRIDES, next);
+    persist(STORAGE_KEYS.OVERRIDES, next);
   }, [baseDashboards]);
 
   const addRecentlyOpened = useCallback((id: string) => {
     setRecentlyOpened(prev => {
       const next = [id, ...prev.filter(i => i !== id)].slice(0, 8);
-      saveToStorage(STORAGE_KEYS.RECENTLY_OPENED, next);
+      persist(STORAGE_KEYS.RECENTLY_OPENED, next);
       return next;
     });
   }, []);
 
   const clearRecentlyOpened = useCallback(() => {
     setRecentlyOpened([]);
-    saveToStorage(STORAGE_KEYS.RECENTLY_OPENED, []);
+    persist(STORAGE_KEYS.RECENTLY_OPENED, []);
   }, []);
 
   const setConfigSourceUrl = useCallback((url: string) => {
     setConfigSourceUrlState(url);
-    saveToStorage(STORAGE_KEYS.CONFIG_SOURCE_URL, url);
+    persist(STORAGE_KEYS.CONFIG_SOURCE_URL, url);
   }, []);
 
   const setBaseDashboards = useCallback((d: Dashboard[]) => {
@@ -203,12 +261,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const setCoverConfig = useCallback((config: CoverConfig) => {
     setCoverConfigState(config);
-    saveToStorage(STORAGE_KEYS.COVER_CONFIG, config);
+    persist(STORAGE_KEYS.COVER_CONFIG, config);
   }, []);
 
   const resetCoverConfig = useCallback(() => {
     setCoverConfigState(DEFAULT_COVER_CONFIG);
-    saveToStorage(STORAGE_KEYS.COVER_CONFIG, DEFAULT_COVER_CONFIG);
+    persist(STORAGE_KEYS.COVER_CONFIG, DEFAULT_COVER_CONFIG);
   }, []);
 
   const value: AppContextType = {
@@ -223,6 +281,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     configSourceUrl, setConfigSourceUrl,
     baseDashboards, setBaseDashboards,
     coverConfig, setCoverConfig, resetCoverConfig,
+    cloudSynced,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

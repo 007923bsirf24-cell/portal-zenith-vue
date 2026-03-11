@@ -240,21 +240,94 @@ export const DASHBOARDS = [
     iconName: 'PackageCheck',
     embedUrl: '',
   },
-
-  // ── HOW TO ADD A NEW DASHBOARD ────────────────────────────────────────────
-  // Copy the block below, uncomment it, fill in the fields, and redeploy.
-  //
-  // {
-  //   id: 'my-new-dashboard',          // unique slug (no spaces)
-  //   title: 'My New Dashboard',
-  //   description: 'Short description shown on the card.',
-  //   category: 'Executive',           // pick from list at top of this file
-  //   tags: ['tag1', 'tag2'],
-  //   status: 'Live Data' as const,    // 'Live Data' or 'Preview'
-  //   featured: false,                 // true = show on home page
-  //   iconName: 'BarChart2',           // from https://lucide.dev/icons
-  //   embedUrl: 'https://...',         // paste Power BI URL here
-  // },
+  {
+    id: 'intercompany-reconciliation',
+    title: 'Inter-Company Reconciliation',
+    description: 'Cross-campus and inter-entity reconciliation with mismatch highlights and aging drill-down.',
+    category: 'Reconciliation',
+    tags: ['intercompany', 'reconciliation', 'elimination', 'campus'],
+    status: 'Preview' as const,
+    featured: true,
+    iconName: 'ArrowLeftRight',
+    embedUrl: '',
+  },
+  {
+    id: 'profit-and-loss',
+    title: 'Profit & Loss Statement',
+    description: 'Income statement by campus with revenue, COGS, operating expenses, and net margin analysis.',
+    category: 'P&L',
+    tags: ['P&L', 'income', 'expenses', 'margin', 'campus'],
+    status: 'Live Data' as const,
+    featured: true,
+    iconName: 'TrendingUp',
+    embedUrl: '',
+  },
+  {
+    id: 'discount-report',
+    title: 'Student Discount Report',
+    description: 'Discounts and fee concessions granted to students by campus, category, and approval status.',
+    category: 'Fees/Receivables',
+    tags: ['discount', 'concession', 'scholarship', 'waiver'],
+    status: 'Preview' as const,
+    featured: false,
+    iconName: 'BadgePercent',
+    embedUrl: '',
+  },
+  {
+    id: 'balance-sheet',
+    title: 'Balance Sheet',
+    description: 'Assets, liabilities, and equity overview with campus-level drill-down and period comparison.',
+    category: 'Executive',
+    tags: ['balance sheet', 'assets', 'liabilities', 'equity'],
+    status: 'Preview' as const,
+    featured: false,
+    iconName: 'Scale',
+    embedUrl: '',
+  },
+  {
+    id: 'cash-flow-statement',
+    title: 'Cash Flow Statement',
+    description: 'Operating, investing, and financing cash flows with campus-wise breakdown.',
+    category: 'Cash',
+    tags: ['cash flow', 'operating', 'investing', 'financing'],
+    status: 'Preview' as const,
+    featured: false,
+    iconName: 'Wallet',
+    embedUrl: '',
+  },
+  {
+    id: 'student-enrollment',
+    title: 'Student Enrollment Analytics',
+    description: 'Enrollment trends, admissions pipeline, retention rates, and demographic analysis by campus.',
+    category: 'Students',
+    tags: ['enrollment', 'admissions', 'retention', 'demographics'],
+    status: 'Live Data' as const,
+    featured: true,
+    iconName: 'GraduationCap',
+    embedUrl: '',
+  },
+  {
+    id: 'tax-report',
+    title: 'Tax & WHT Report',
+    description: 'Withholding tax, sales tax, and income tax summaries with filing status tracking.',
+    category: 'Compliance',
+    tags: ['tax', 'WHT', 'sales tax', 'filing'],
+    status: 'Preview' as const,
+    featured: false,
+    iconName: 'Landmark',
+    embedUrl: '',
+  },
+  {
+    id: 'trial-balance',
+    title: 'Trial Balance',
+    description: 'Period-end trial balance with debit/credit totals, variance flags, and ledger drill-through.',
+    category: 'Close Pack',
+    tags: ['trial balance', 'ledger', 'GL', 'period-end'],
+    status: 'Preview' as const,
+    featured: false,
+    iconName: 'BookOpen',
+    embedUrl: '',
+  },
 ];
 
 // -----------------------------------------------------------------------------
