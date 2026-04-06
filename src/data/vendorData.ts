@@ -12,6 +12,43 @@ function perCampus<T>(gen: (c: string) => T): Record<string, T> {
   return r;
 }
 
+const VENDOR_NAMES = [
+  'Oxford University Press', 'Pakistan Electric Co (IESCO)', 'Tech Solutions Ltd',
+  'City Transport Services', 'Lab World International', 'Sui Northern Gas (SNGPL)',
+  'Furniture Hub Pakistan', 'Office Pro Stationers', 'CleanPro Services', 'SecureGuard Pakistan',
+  'Metro Pakistan Pvt. Ltd.', 'Copier Zone', 'Baba Buta Catering', 'Ebone Network (Pvt.) Ltd',
+  'Cyber Internet Services', 'Ahmad Electric & Sanitary', 'National Electric Store',
+  'Sajid Flour Mills (Pvt.) Ltd.', 'Sonu Aslam Steel Works', 'Total Parco Pakistan Pvt. Ltd',
+];
+
+function genVendorMovement(campus: string) {
+  const mul = CAMPUS_MULTIPLIERS[campus] || 1;
+  return VENDOR_NAMES.map((name, vi) => {
+    const base = (50000 + vi * 18000) * mul;
+    const openBal = +(base * (0.1 + Math.sin(vi) * 0.05)).toFixed(0);
+    const monthlyDebits = MONTHS.map((_, mi) => {
+      const val = base * (0.06 + Math.sin(vi + mi * 0.7) * 0.03);
+      return +(val > 0 ? val : 0).toFixed(0);
+    });
+    const monthlyCredits = MONTHS.map((_, mi) => {
+      const val = base * (0.055 + Math.cos(vi + mi * 0.5) * 0.025);
+      return +(val > 0 ? val : 0).toFixed(0);
+    });
+    const totalDebits = monthlyDebits.reduce((s, v) => s + v, 0);
+    const totalCredits = monthlyCredits.reduce((s, v) => s + v, 0);
+    const closingBal = openBal + totalDebits - totalCredits;
+    return {
+      name,
+      openingBalance: openBal,
+      monthlyDebits,
+      monthlyCredits,
+      totalDebits,
+      totalCredits,
+      closingBalance: closingBal,
+    };
+  });
+}
+
 export const VENDOR_DATA = perCampus(campus => ({
   kpis: [
     { label: 'Total Vendors', value: `${Math.round(85 * (CAMPUS_MULTIPLIERS[campus] || 1))}` },
@@ -31,6 +68,7 @@ export const VENDOR_DATA = perCampus(campus => ({
     { id: 'V009', name: 'CleanPro Services', category: 'Cleaning & Janitorial', balance: m(campus, 0.6), current: m(campus, 0.4), days30: m(campus, 0.2), days60: 0, days90: 0, status: 'Active' },
     { id: 'V010', name: 'SecureGuard Pakistan', category: 'Security Services', balance: m(campus, 1.2), current: m(campus, 0.7), days30: m(campus, 0.3), days60: m(campus, 0.2), days90: 0, status: 'Active' },
   ],
+  vendorMovement: genVendorMovement(campus),
   monthlyMovement: MONTHS.map((month, i) => ({
     month,
     opening: m(campus, 12 + Math.sin(i) * 2),
