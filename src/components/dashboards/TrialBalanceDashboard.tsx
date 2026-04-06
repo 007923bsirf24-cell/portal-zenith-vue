@@ -4,7 +4,7 @@ import { KpiCard, ChartCard } from './KpiCard';
 import { DashboardFilters, useDashboardFilters } from './DashboardFilters';
 import { BookOpen, Scale, AlertTriangle, Hash } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { DownloadButtons } from './DownloadButtons';
 
 const TYPE_COLORS: Record<string, string> = {
