@@ -9,6 +9,9 @@ import { APDashboard } from './APDashboard';
 import { CapexDashboard } from './CapexDashboard';
 import { ComplianceDashboard } from './ComplianceDashboard';
 import { ClosePackDashboard } from './ClosePackDashboard';
+import { PnlDashboard } from './PnlDashboard';
+import { TrialBalanceDashboard } from './TrialBalanceDashboard';
+import { VendorDashboard } from './VendorDashboard';
 
 const CATEGORY_MAP: Record<string, React.FC> = {
   Executive: ExecutiveDashboard,
@@ -21,6 +24,10 @@ const CATEGORY_MAP: Record<string, React.FC> = {
   Capex: CapexDashboard,
   Compliance: ComplianceDashboard,
   'Close Pack': ClosePackDashboard,
+  'P&L': PnlDashboard,
+  Reconciliation: PnlDashboard,
+  'Trial Balance': TrialBalanceDashboard,
+  Vendors: VendorDashboard,
 };
 
 interface Props {
