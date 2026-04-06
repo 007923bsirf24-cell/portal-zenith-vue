@@ -109,7 +109,6 @@ export function TrialBalanceDashboard() {
                       <td className="py-2 px-3 text-right font-bold text-card-foreground">{r.credit > 0 ? r.credit.toFixed(2) : '—'}</td>
                     </motion.tr>
                   </React.Fragment>
-                  </motion.tr>
                 );
               })}
               <tr className="border-t-4 border-primary/30 bg-primary/10">
