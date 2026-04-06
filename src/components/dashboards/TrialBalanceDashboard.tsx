@@ -81,28 +81,34 @@ export function TrialBalanceDashboard() {
                 const prevType = i > 0 ? filteredRows[i - 1].type : null;
                 const showHeader = r.type !== prevType;
                 return (
-                  <motion.tr key={r.code}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.02, duration: 0.3 }}
-                  >
+                  <React.Fragment key={r.code}>
                     {showHeader && (
-                      <td colSpan={5} className="py-2 px-3 text-xs font-bold uppercase tracking-wider" style={{ color: TYPE_COLORS[r.type] }}>
-                        <div className="flex items-center gap-2 pt-2">
-                          <span className="w-2 h-2 rounded-full" style={{ background: TYPE_COLORS[r.type] }} />
-                          {r.type === 'Asset' ? 'Assets' : r.type === 'Liability' ? 'Liabilities' : r.type + 's'}
-                        </div>
-                      </td>
+                      <tr>
+                        <td colSpan={5} className="py-2 px-3 text-xs font-bold uppercase tracking-wider" style={{ color: TYPE_COLORS[r.type] }}>
+                          <div className="flex items-center gap-2 pt-2">
+                            <span className="w-2 h-2 rounded-full" style={{ background: TYPE_COLORS[r.type] }} />
+                            {r.type === 'Asset' ? 'Assets' : r.type === 'Liability' ? 'Liabilities' : r.type + 's'}
+                          </div>
+                        </td>
+                      </tr>
                     )}
-                    <td className="py-2 px-3 text-muted-foreground font-mono text-xs">{r.code}</td>
-                    <td className="py-2 px-3 font-medium text-card-foreground">{r.account}</td>
-                    <td className="py-2 px-3">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase" style={{ background: TYPE_COLORS[r.type] + '15', color: TYPE_COLORS[r.type] }}>
-                        {r.type}
-                      </span>
-                    </td>
-                    <td className="py-2 px-3 text-right font-bold text-card-foreground">{r.debit > 0 ? r.debit.toFixed(2) : '—'}</td>
-                    <td className="py-2 px-3 text-right font-bold text-card-foreground">{r.credit > 0 ? r.credit.toFixed(2) : '—'}</td>
+                    <motion.tr
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.02, duration: 0.3 }}
+                      className="border-b border-border/50 hover:bg-primary/[0.03] transition-colors"
+                    >
+                      <td className="py-2 px-3 text-muted-foreground font-mono text-xs">{r.code}</td>
+                      <td className="py-2 px-3 font-medium text-card-foreground">{r.account}</td>
+                      <td className="py-2 px-3">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase" style={{ background: TYPE_COLORS[r.type] + '15', color: TYPE_COLORS[r.type] }}>
+                          {r.type}
+                        </span>
+                      </td>
+                      <td className="py-2 px-3 text-right font-bold text-card-foreground">{r.debit > 0 ? r.debit.toFixed(2) : '—'}</td>
+                      <td className="py-2 px-3 text-right font-bold text-card-foreground">{r.credit > 0 ? r.credit.toFixed(2) : '—'}</td>
+                    </motion.tr>
+                  </React.Fragment>
                   </motion.tr>
                 );
               })}
