@@ -28,6 +28,8 @@ export const CATEGORIES = [
   'Reconciliation',
   'P&L',
   'Students',
+  'Trial Balance',
+  'Vendors',
 ] as const;
 
 export const CATEGORY_ICON_FALLBACKS: Record<string, string> = {
@@ -44,6 +46,8 @@ export const CATEGORY_ICON_FALLBACKS: Record<string, string> = {
   Reconciliation: 'ArrowLeftRight',
   'P&L': 'TrendingUp',
   Students: 'GraduationCap',
+  'Trial Balance': 'BookOpen',
+  Vendors: 'Truck',
 };
 
 export const DEFAULT_DASHBOARDS: Dashboard[] = DASHBOARDS;
